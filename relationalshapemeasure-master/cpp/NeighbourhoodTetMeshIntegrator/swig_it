@@ -1,0 +1,4 @@
+swig -Wall -python -c++ NeighbourhoodTetMeshIntegrator.i
+g++ -O3 -fPIC -fopenmp -lstdc++ -c c_NeighbourhoodTetMeshIntegrator.cpp
+g++ -O3 -fPIC -fopenmp -lstdc++ -c NeighbourhoodTetMeshIntegrator_wrap.cxx -I/usr/include/python3.7 -I/usr/lib/python3.7/site-packages/numpy/core/include
+g++ -shared c_NeighbourhoodTetMeshIntegrator.o NeighbourhoodTetMeshIntegrator_wrap.o -fopenmp -O3 -lstdc++ -o _NeighbourhoodTetMeshIntegrator.so
