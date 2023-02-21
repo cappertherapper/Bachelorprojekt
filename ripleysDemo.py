@@ -1,5 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib import pyplot as plt,patches
 from scipy.spatial.distance import pdist, squareform
 # def ripleysK1 (K,r,y):
 
@@ -19,7 +20,7 @@ def noisyGrid(N, s, M):
 
 def regularGrid(N, M):
     # ceil(sqrt(N))^2 points sampled on a regular grid 0..Mx0..M grid in 2D
-    rows, cols = np.meshgrid(np.linspace(0, M, np.ceil(np.sqrt(N))), np.linspace(0, M, np.ceil(np.sqrt(N))))
+    rows, cols = np.meshgrid(np.linspace(0, M, int(np.ceil(np.sqrt(N)))), np.linspace(0, M, int(np.ceil(np.sqrt(N)))))
     x = np.concatenate((rows.reshape(-1, 1), cols.reshape(-1, 1)), axis=1)
     return x
 
@@ -59,51 +60,54 @@ def ripleysDemo():
     N = 100
     M = 256
     L = 50
-    x0 = np.array([[L,L]])
-    x1 = np.array([[M-L,M-L]])
+    x0 = np.array([L,L])
+    x1 = np.array([M-L,M-L])
+    # x0 = [L,L]
+    # x1 = [M-L,M-L]
     F = 1
     
-    DATA = 1
-    REPEAT = [10,1]
+    DATA = [1,1]
+    REPEAT = [1,1]
     COLOR = ['r','b']
     THICKNESS = [1,3]
     PAUSELEN = 0.1
     
     for i in range(len(REPEAT)):
         for j in range(REPEAT[i]):
-            if DATA == 1:
+            if DATA[i] == 1:
                 x = poissonProcess(N, M)  # A poisson process
                 name = 'Poisson'
-            elif DATA == 2:
+            elif DATA[i] == 2:
                 x = motherOfGaussians(30, M//50, N, M)  # Mother process of Gaussians
                 name = 'Mother of Gaussian'
-            elif DATA == 3:
+            elif DATA[i] == 3:
                 x = noisyGrid(N, 0.2*M/np.sqrt(N), M)  # A regular grid plus noise
                 name = 'Noisy Grid'
-            else:
+            elif DATA[i] == 4:
                 x = regularGrid(N, M)  # A regular grid
                 name = 'Grid'
 
             K1, r1, y = ripleysK1(x, x0, x1)
             r = np.linspace(0, L, 10*L)
             f = np.pi*r**2
-
-            plt.subplot(1, len(REPEAT)+1, i+1)
-            plt.plot(x[:, 0], x[:, 1], 'b+')
-            plt.plot([x0[0], x0[0], x1[0], x1[0], x0[0]], [x0[1], x1[1], x1[1], x0[1], x0[1]], 'r-')
-            ind = (x[:, 0] > x0[0]) & (x[:, 0] < x1[0]) & (x[:, 1] > x0[1]) & (x[:, 1] < x1[1])
-            plt.plot(x[ind, 0], x[ind, 1], 'r+')
-            plt.xlim([0, M])
-            plt.ylim([0, M])
+            
+            fig, ax = plt.subplots(1,2)
+            # plt.subplot(1, len(REPEAT)+1, i+1)
+            ax[0].plot(x[:, 0], x[:, 1], 'b+')
+            rect = patches.Rectangle(x0, (x1[0]-x0[0]),(x1[0]-x0[0]), color='red')
+            # plt.plot(rect)
+            ax[0].add_patch(rect)
+            ax[0].axis(xmin=0,xmax=M)
+            ax[0].axis(ymin=0,ymax=M)
             plt.title(name)
-
-            plt.subplot(1, len(REPEAT)+1, len(REPEAT)+1)
-            plt.plot(r1, K1, COLOR[i], linewidth=THICKNESS[i])
-            plt.plot(r, f, 'k')
-            plt.xlim([0, L])
+            ax[1].plot(r1, K1, COLOR[i], linewidth=THICKNESS[0])
+            ax[1].plot(r, f, 'k')
+            ax[1].axis(xmin=0,xmax=L)
+            ax[1].axis(ymin=0,ymax=8000)
             plt.title("Ripley's K")
             plt.pause(PAUSELEN)
         #figure(1)
+    plt.show()
         #clf
         
 ripleysDemo()
