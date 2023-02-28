@@ -17,7 +17,6 @@ def ripleysPlot(datapoints, bottomleft, topright):
     
     return r,K
 
-#skimage.morphology.label
 
 
 

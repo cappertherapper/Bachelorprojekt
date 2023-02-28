@@ -12,8 +12,9 @@ upperBound = [M-L, M-L]
 
 rand_data = np.random.uniform(0, M, (N, 2))
 
+print(rand_data)
 plt.scatter(rand_data[:,0], rand_data[:,1])
-plt.show()
+#plt.show()
 
 r, K = rp.ripleysPlot(rand_data, lowerBound, upperBound)
 K = K[r<L]
@@ -23,4 +24,4 @@ xs = np.linspace(0, L, 100)
 
 plt.plot(xs, math.pi*xs**2)
 plt.plot(r, K)
-plt.show()
+#plt.show()
