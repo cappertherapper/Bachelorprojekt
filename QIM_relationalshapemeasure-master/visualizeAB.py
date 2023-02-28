@@ -34,7 +34,13 @@ def Test_Cube_Integration_Interior(do_plots):
         # ax_D = fig.add_subplot(221)        
         # ax_r = fig.add_subplot(222)
 
-    V = np.array([[0,0,0],
+
+    # V = np.array([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [1, 1, 1], [0, 1, 1], [0, 0, 1], [1, 0, 1]])
+
+    show_original = False
+    if show_original:
+        for i,T in enumerate([T1,T2]):
+            V = np.array([[0,0,0],
                     [0,0,1],
                     [0,1,0],
                     [0,1,1],
@@ -42,12 +48,6 @@ def Test_Cube_Integration_Interior(do_plots):
                     [1,0,1],
                     [1,1,0],
                     [1,1,1]], dtype=float)
-    # V = np.array([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [1, 1, 1], [0, 1, 1], [0, 0, 1], [1, 0, 1]])
-
-    D = V[:,0] + 0.5
-    
-    if do_plots:
-        for i,T in enumerate([T1,T2]):
             data = []
             for e in T:
                 tet_vertices = V[e]
@@ -55,15 +55,7 @@ def Test_Cube_Integration_Interior(do_plots):
                 data.append(go.Mesh3d(
                     x=x, y=y, z=z,
                     i=[0, 1, 2, 3], j=[1, 2, 3, 0], k=[2, 3, 0, 1],
-                    opacity=0.5,
-                    color='blue'
-                ))
-
-            # layout = go.Layout(
-
-            # )
-
-            # Create the plotly figure and show it
+                    opacity=0.5,color='blue'))
             fig = go.Figure(data=data)
             fig.update_layout(
                 margin=dict(l=0, r=0, t=0, b=0),
@@ -71,13 +63,23 @@ def Test_Cube_Integration_Interior(do_plots):
             fig.update_traces(name=f'T{i+1}',visible=True,showlegend=True)
             fig.show()
 
-
-    
     if do_plots:
-        for i in range(2):
-            R = RandomRotationMatrix()
-            V = np.dot(V, R.T)
-            for i,T in enumerate([T1,T2]): # plot T1 and T2
+        for i,T in enumerate([T1,T2]):
+            for i in range(3):
+                V = np.array([[0,0,0],
+                        [0,0,1],
+                        [0,1,0],
+                        [0,1,1],
+                        [1,0,0],
+                        [1,0,1],
+                        [1,1,0],
+                        [1,1,1]], dtype=float)
+                
+                D = V[:,0] + 0.5
+                
+                R = RandomRotationMatrix()
+                
+                V = np.dot(V, R.T)
                 '''
                 In this example, we use the Mesh3d trace type in plotly to plot
                 each tetrahedron as a single 3D shape. The i, j, and k lists 
@@ -86,44 +88,32 @@ def Test_Cube_Integration_Interior(do_plots):
                 '''
                 data = []
                 for e in T:
-                    tet_vertices = V[e] #(3,4) array, 3 rækker 4 kolonner
+                    tet_vertices = V[e]
                     x, y, z = tet_vertices.T
                     data.append(go.Mesh3d(
                         x=x, y=y, z=z,
                         i=[0, 1, 2, 3], j=[1, 2, 3, 0], k=[2, 3, 0, 1],
-                        opacity=0.5,
-                        color='blue'
-                    ))
-
-                layout = go.Layout(
+                        opacity=0.5,color='blue'))
+                fig = go.Figure(data=data)
+                fig.update_layout(
                     margin=dict(l=0, r=0, t=0, b=0),
-                    scene=dict(aspectmode='data'),
-                    title=f'Plot {i+1}'
-                )
-                # Create the plotly figure and show it
-                fig = go.Figure(data=data, layout=layout)
+                    scene=dict(aspectmode='data'))
                 fig.update_traces(name=f'T{i+1}',visible=True,showlegend=True)
                 fig.show()
+                '''
+                Now we plot the measure interior 
+                '''
                 ra, volume1, area1 = measure_interior(V, T, D, r, adaptive=True)
                 # Define the plotly data and layout
-                data1 = [
-                    go.Scatter(
-                        x=ra, y=volume1,
-                        mode='lines',
-                        line=dict(color='blue')
-                    )
-                ]
-
+                data1 = go.Scatter(x=ra, y=volume1,mode='lines',name='Volume')
+                data2 = go.Scatter(x=ra, y=area1,mode='lines',name='Area')
+                data_all=[data1,data2]
                 layout1= go.Layout(
-                    xaxis=dict(title='x'),
-                    yaxis=dict(title='y'),
-                    title=f'T{i+1} of Interior volume '
-                )
-
+                    xaxis=dict(title='x'),yaxis=dict(title='y'),title=f'T{i+1} of Interior volume ')
                 # Create the plotly figure and show it
-                fig1 = go.Figure(data=data1, layout=layout1)
+                fig1 = go.Figure(data=data_all, layout=layout1)
                 fig1.show()
-                
+                    
     
     ra, volume1, area1 = measure_interior(V, T1, D, r, adaptive=True)
     ra, volume2, area2 = measure_interior(V, T2, D, r, adaptive=True)
