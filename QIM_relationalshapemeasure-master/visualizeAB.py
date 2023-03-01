@@ -37,7 +37,7 @@ def Test_Cube_Integration_Interior(do_plots):
 
     # V = np.array([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [1, 1, 1], [0, 1, 1], [0, 0, 1], [1, 0, 1]])
 
-    show_original = False
+    show_original = True
     if show_original:
         for i,T in enumerate([T1,T2]):
             V = np.array([[0,0,0],
@@ -65,7 +65,7 @@ def Test_Cube_Integration_Interior(do_plots):
 
     if do_plots:
         for i,T in enumerate([T1,T2]):
-            for i in range(3):
+            for i in range(1):
                 V = np.array([[0,0,0],
                         [0,0,1],
                         [0,1,0],
@@ -75,11 +75,11 @@ def Test_Cube_Integration_Interior(do_plots):
                         [1,1,0],
                         [1,1,1]], dtype=float)
                 
-                D = V[:,0] + 0.5
+                # D = V[:,0] + 1
+                D = np.linalg.norm(V-[2,0,0],axis=1)
+                # R = RandomRotationMatrix()
                 
-                R = RandomRotationMatrix()
-                
-                V = np.dot(V, R.T)
+                # V = np.dot(V, R.T)
                 '''
                 In this example, we use the Mesh3d trace type in plotly to plot
                 each tetrahedron as a single 3D shape. The i, j, and k lists 

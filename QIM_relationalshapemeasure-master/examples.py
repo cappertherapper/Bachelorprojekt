@@ -37,7 +37,7 @@ def Test_Cube_Integration_Interior(do_plots):
                       [1,1,0],
                       [1,1,1]], dtype=float)
 
-        D = V[:,0] + 0.5
+        D = V[:,0] + 1
 
         R = RandomRotationMatrix()
         V = np.dot(V, R.T)
