@@ -3,6 +3,7 @@ import matplotlib
 from matplotlib import pyplot as plt,patches
 from scipy.spatial.distance import pdist, squareform
 # def ripleysK1 (K,r,y):
+from tifCentres import tif_centres
 
 def poissonProcess(N, M):
     # N randomly and uniformly distributed points on the domain 0..Mx0..M
