@@ -3,7 +3,7 @@ import matplotlib
 from matplotlib import pyplot as plt,patches
 from scipy.spatial.distance import pdist, squareform
 # def ripleysK1 (K,r,y):
-from tifCentres import tifCentroids
+from tifCentres import tifCentroids, whitePixels
 
 def poissonProcess(N, M):
     # N randomly and uniformly distributed points on the domain 0..Mx0..M
@@ -72,12 +72,13 @@ def ripleysDemo():
     F = 1
     
     DATA = [5,3]
-    REPEAT = [1,3]
+    REPEAT = [1,2]
     COLOR = ['r','b']
     THICKNESS = [1,3]
     PAUSELEN = 0.5
     
-    fig, ax = plt.subplots(1,3)
+    fig, ax = plt.subplots(1,2)     #plots of point distributions
+    fig1, ax1 = plt.subplots()      #plot of graphs
     fig.subplots_adjust(wspace=0.4)
     for i in range(len(REPEAT)):
         for j in range(REPEAT[i]):
@@ -97,7 +98,10 @@ def ripleysDemo():
             elif DATA[i] == 5:
                 x = tifCentroids()
                 name = 'Centroids'
-
+            elif DATA[i] == 6:
+                x = whitePixels()
+                name = 'White Pixels'
+                
             K1, r1, y = ripleysK1(x, x0, x1)
             r = np.linspace(0, L, 10*L)
             f = np.pi*r**2
@@ -108,12 +112,12 @@ def ripleysDemo():
             ax[i].axis(xmin=0,xmax=M)
             ax[i].axis(ymin=0,ymax=M)
             ax[i].set_title(name)
-            ax[2].plot(r1, K1, COLOR[i], linewidth=THICKNESS[0])
-            ax[2].plot(r, f, 'k')
-            ax[2].axis(xmin=0,xmax=L)
-            ax[2].axis(ymin=0,ymax=8000)
-            ax[2].set_title("Ripley's K")
-            plt.pause(PAUSELEN)
+            ax1.plot(r1, K1, COLOR[i], linewidth=THICKNESS[0])
+            ax1.plot(r, f, 'k')
+            ax1.axis(xmin=0,xmax=L)
+            ax1.axis(ymin=0,ymax=8000)
+            ax1.set_title("Ripley's K")
+            #plt.pause(PAUSELEN)
     plt.show()
 
         
