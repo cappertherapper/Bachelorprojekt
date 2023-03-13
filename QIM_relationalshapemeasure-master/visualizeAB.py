@@ -195,66 +195,115 @@ def Test_Cube_Integration_Interior(do_plots):
 #     if do_plots:
 #         plt.show()
 
-# def Test_Random_Integrations(do_plots):
+def Test_Random_Integrations(do_plots):
 
-#     np.random.seed(42)
+    np.random.seed(42)
 
-#     N = 25    # num vertices
-#     M = N//3  # num faces / tetrahedra
-#     R = 15    # max r value (distance) to measure
-#     K = 100   # num reading points
+    N = 25    # num vertices
+    M = N//3  # num faces / tetrahedra
+    R = 15    # max r value (distance) to measure
+    K = 100   # num reading points
 
-#     ## EXTERIOR TEST
+    ## EXTERIOR TEST
 
-#     V = np.random.uniform(0, 10, (N, 3))
-#     F = np.random.randint(0, N, (M, 3))
-#     D = np.random.uniform(0, 10, N)
-#     r = np.linspace(0, R, K)
+    V = np.random.uniform(0, 10, (N, 3))
+    F = np.random.randint(0, N, (M, 3))
+    D = np.random.uniform(0, 10, N)
+    r = np.linspace(0, R, K)
 
-#     _, mu10, mu11 = measure_exterior(V, F, D, r)
+    if do_plots:
+        data = []
+        for e in F:
+            tet_vertices = V[e]
+            x, y, z = tet_vertices.T
+            data.append(go.Mesh3d(
+                x=x, y=y, z=z,
+                #i=[0, 1, 2, 3], j=[1, 2, 3, 0], k=[2, 3, 0, 1],
+                opacity=0.5,
+                color='blue'
+            ))
 
-#     r_adapt, mu10_adapt, mu11_adapt = measure_exterior(V, F, D, r, adaptive=True)
+        # layout = go.Layout(
 
-#     if do_plots:
-#         plt.subplot(1,2,1)
-#         plt.title('volume')
-#         plt.plot(r, mu10, label='fixed r')
-#         plt.plot(r_adapt, mu10_adapt, label='adaptive r')
-#         plt.legend()
+        # )
 
-#         plt.subplot(1,2,2)
-#         plt.title('inner surface cut')
-#         plt.plot(r, mu11, label='fixed r')
-#         plt.plot(r_adapt, mu11_adapt, label='adaptive r')
-#         plt.legend()
+        # Create the plotly figure and show it
+        fig = go.Figure(data=data)
+        fig.update_layout(
+            margin=dict(l=0, r=0, t=0, b=0),
+            scene=dict(aspectmode='data'))
+        fig.update_traces(name='EXT-F',visible=True,showlegend=True)
+        fig.show()
+            
+            
+    _, mu10, mu11 = measure_exterior(V, F, D, r)
 
-#         plt.show()
+    r_adapt, mu10_adapt, mu11_adapt = measure_exterior(V, F, D, r, adaptive=True)
 
-#     ## INTERIOR TEST
+    # if do_plots:
+    #     plt.subplot(1,2,1)
+    #     plt.title('volume')
+    #     plt.plot(r, mu10, label='fixed r')
+    #     plt.plot(r_adapt, mu10_adapt, label='adaptive r')
+    #     plt.legend()
 
-#     V = np.random.uniform(0, 10, (N, 3))
-#     T = np.random.randint(0, N, (M, 4))
-#     D = np.random.uniform(0, 10, N)
-#     r = np.linspace(0, R, K)
+    #     plt.subplot(1,2,2)
+    #     plt.title('inner surface cut')
+    #     plt.plot(r, mu11, label='fixed r')
+    #     plt.plot(r_adapt, mu11_adapt, label='adaptive r')
+    #     plt.legend()
 
-#     _, mu00, mu01 = measure_interior(V, T, D, r)
+        #plt.show()
 
-#     r_adapt, mu00_adapt, mu01_adapt = measure_interior(V, T, D, r, adaptive=True)
+    ## INTERIOR TEST
 
-#     if do_plots:
-#         plt.subplot(1,2,1)
-#         plt.title('volume')
-#         plt.plot(r, mu00, label='fixed r')
-#         plt.plot(r_adapt, mu00_adapt, label='adaptive r')
-#         plt.legend()
+    V = np.random.uniform(0, 10, (N, 3))
+    T = np.random.randint(0, N, (M, 4))
+    D = np.random.uniform(0, 10, N)
+    r = np.linspace(0, R, K)
+    
+    if do_plots:
+        data = []
+        for e in F:
+            tet_vertices = V[e]
+            x, y, z = tet_vertices.T
+            data.append(go.Mesh3d(
+                x=x, y=y, z=z,
+                #i=[0, 1, 2, 3], j=[1, 2, 3, 0], k=[2, 3, 0, 1],
+                opacity=0.5,
+                color='blue'
+            ))
 
-#         plt.subplot(1,2,2)
-#         plt.title('inner surface cut')
-#         plt.plot(r, mu01, label='fixed r')
-#         plt.plot(r_adapt, mu01_adapt, label='adaptive r')
-#         plt.legend()
+        # layout = go.Layout(
 
-#         plt.show()
+        # )
+
+        # Create the plotly figure and show it
+        fig = go.Figure(data=data)
+        fig.update_layout(
+            margin=dict(l=0, r=0, t=0, b=0),
+            scene=dict(aspectmode='data'))
+        fig.update_traces(name='INT-F',visible=True,showlegend=True)
+        fig.show()
+
+    _, mu00, mu01 = measure_interior(V, T, D, r)
+
+    r_adapt, mu00_adapt, mu01_adapt = measure_interior(V, T, D, r, adaptive=True)
+
+    if do_plots:
+        plt.subplot(1,2,1)
+        plt.title('volume')
+        plt.plot(r, mu00, label='fixed r')
+        plt.plot(r_adapt, mu00_adapt, label='adaptive r')
+        plt.legend()
+
+        plt.subplot(1,2,2)
+        plt.title('inner surface cut')
+        plt.plot(r, mu01, label='fixed r')
+        plt.plot(r_adapt, mu01_adapt, label='adaptive r')
+        plt.legend()
+
+        plt.show()
 
 if __name__ == '__main__':
     do_plots = True
@@ -262,8 +311,8 @@ if __name__ == '__main__':
     import time
 
     t0 = time.time()
-    Test_Cube_Integration_Interior(do_plots)
+    #Test_Cube_Integration_Interior(do_plots)
     # Test_Cube_Integration_Exterior(do_plots)
-    # Test_Random_Integrations(do_plots)
+    Test_Random_Integrations(do_plots)
     t1 = time.time()
     print(t1 - t0, 's')
