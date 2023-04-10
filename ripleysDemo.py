@@ -5,6 +5,7 @@ from scipy.spatial.distance import pdist, squareform
 # def ripleysK1 (K,r,y):
 from tifCentres import tifCentroids, whitePixels
 
+
 def poissonProcess(N, M):
     # N randomly and uniformly distributed points on the domain 0..Mx0..M
     x = M * np.random.rand(N, 2)
@@ -39,6 +40,7 @@ def motherOfGaussians(L, s, N, M):
     x = x[(x >= 0).all(axis=1) & (x <= M).all(axis=1)]
     return x
 
+
 def ripleysK1(x, x0, x1):
     # Calculate Ripleys K function for square domains using sorting
 
@@ -59,6 +61,8 @@ def ripleysK1(x, x0, x1):
     K = ((np.arange(len(r))/N)/l).reshape(-1, 1)
     return K, r, y
 
+
+
 def ripleysDemo():
     # N = 100
     # M = 256
@@ -71,15 +75,15 @@ def ripleysDemo():
     # x1 = [M-L,M-L]
     F = 1
     
-    DATA = [5,3]
+    DATA = [6,3]
     REPEAT = [1,2]
     COLOR = ['r','b']
     THICKNESS = [1,3]
     PAUSELEN = 0.5
     
-    fig, ax = plt.subplots(1,2)     #plots of point distributions
-    fig1, ax1 = plt.subplots()      #plot of graphs
+    fig, ax = plt.subplots(1,3, figsize=(10,6), gridspec_kw={'width_ratios': [1, 1, 3]})  # plots
     fig.subplots_adjust(wspace=0.4)
+    # fig.set_size_inches(10,6)
     for i in range(len(REPEAT)):
         for j in range(REPEAT[i]):
             ax[i].clear()
@@ -96,10 +100,10 @@ def ripleysDemo():
                 x = regularGrid(N, M)  # A regular grid
                 name = 'Grid'
             elif DATA[i] == 5:
-                x = tifCentroids()
+                x = tifCentroids()      # Centroids of thresholded clusters
                 name = 'Centroids'
             elif DATA[i] == 6:
-                x = whitePixels()
+                x = whitePixels()       # Thresholded clusters
                 name = 'White Pixels'
                 
             K1, r1, y = ripleysK1(x, x0, x1)
@@ -112,78 +116,13 @@ def ripleysDemo():
             ax[i].axis(xmin=0,xmax=M)
             ax[i].axis(ymin=0,ymax=M)
             ax[i].set_title(name)
-            ax1.plot(r1, K1, COLOR[i], linewidth=THICKNESS[0])
-            ax1.plot(r, f, 'k')
-            ax1.axis(xmin=0,xmax=L)
-            ax1.axis(ymin=0,ymax=8000)
-            ax1.set_title("Ripley's K")
-            #plt.pause(PAUSELEN)
+            ax[2].plot(r1, K1, COLOR[i], linewidth=THICKNESS[0])
+            ax[2].plot(r, f, 'k')
+            ax[2].axis(xmin=0,xmax=L)
+            ax[2].axis(ymin=0,ymax=8000)
+            ax[2].set_title("Ripley's K")
+            plt.pause(PAUSELEN)
     plt.show()
 
-        
+    
 ripleysDemo()
-
-
-
-
-# def ripleysDemo():
-#     # N = 100
-#     # M = 256
-#     N = 542 # Same number of clusters found in .tif
-#     M = 378 # Size of .tif images
-#     L = 50
-#     x0 = np.array([L,L])
-#     x1 = np.array([M-L,M-L])
-#     # x0 = [L,L]
-#     # x1 = [M-L,M-L]
-#     F = 1
-    
-#     DATA = [1,3]
-#     REPEAT = [3,1]
-#     COLOR = ['r','b']
-#     THICKNESS = [1,3]
-#     PAUSELEN = 0.1
-    
-#     for i in range(len(REPEAT)):
-#         for j in range(REPEAT[i]):
-#             if DATA[i] == 1:
-#                 x = poissonProcess(N, M)  # A poisson process
-#                 name = 'Poisson'
-#             elif DATA[i] == 2:
-#                 x = motherOfGaussians(30, M//50, N, M)  # Mother process of Gaussians
-#                 name = 'Mother of Gaussian'
-#             elif DATA[i] == 3:
-#                 x = noisyGrid(N, 0.2*M/np.sqrt(N), M)  # A regular grid plus noise
-#                 name = 'Noisy Grid'
-#             elif DATA[i] == 4:
-#                 x = regularGrid(N, M)  # A regular grid
-#                 name = 'Grid'
-#             elif DATA[i] == 5:
-#                 x = tifCentroids()
-#                 name = 'TIF Centroids'
-
-#             K1, r1, y = ripleysK1(x, x0, x1)
-#             r = np.linspace(0, L, 10*L)
-#             f = np.pi*r**2
-            
-#             fig, ax = plt.subplots(1,2)
-#             # plt.subplot(1, len(REPEAT)+1, i+1)
-#             ax[0].plot(x[:, 0], x[:, 1], 'b+')
-#             rect = patches.Rectangle(x0, (x1[0]-x0[0]),(x1[0]-x0[0]), color='red')
-#             # plt.plot(rect)
-#             ax[0].add_patch(rect)
-#             ax[0].axis(xmin=0,xmax=M)
-#             ax[0].axis(ymin=0,ymax=M)
-#             plt.title(name)
-#             ax[1].plot(r1, K1, COLOR[i], linewidth=THICKNESS[0])
-#             ax[1].plot(r, f, 'k')
-#             ax[1].axis(xmin=0,xmax=L)
-#             ax[1].axis(ymin=0,ymax=8000)
-#             plt.title("Ripley's K")
-#             plt.pause(PAUSELEN)
-#         #figure(1)
-#     plt.show()
-#         #clf
-        
-# ripleysDemo()
-    
