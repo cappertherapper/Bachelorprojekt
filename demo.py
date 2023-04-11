@@ -18,7 +18,11 @@ star_mask = polygon2mask((1024,1024), (star*40) + 100)
 circle_mask = polygon2mask((1024,1024), (circle*100) + 500)
 all_mask = star_mask + circle_mask
 
-plt.imshow(all_mask)
+fig, ax = plt.subplots(1,4, figsize=(14,6), gridspec_kw={'width_ratios': [1, 1, 1, 2]})
+fig.subplots_adjust(wspace=0.4)
+plt.tight_layout()
+
+ax[3].imshow(all_mask)
 
 D = ndimage.distance_transform_edt(circle_mask==0)
 f = np.zeros(600)
@@ -32,19 +36,15 @@ for i in range(0,600):
         plt.contour(K)
         plt.pause(0.5)
 
-plt.show()
-    
-plt.plot(f)
-plt.xlabel('r')
-plt.ylabel('area overlap')
-plt.show()
+ax[0].plot(f)
+ax[0].set_xlabel('r')
+ax[0].set_ylabel('area overlap')
 
-plt.plot(f/g)
-plt.xlabel('r')
-plt.ylabel('fractional area overlap')
-plt.show()
+ax[1].plot(f/g)
+ax[1].set_xlabel('r')
+ax[1].set_ylabel('fractional area overlap')
 
-plt.plot(f[1:]-f[:-1])
-plt.xlabel('r')
-plt.ylabel('curve overlap')
+ax[2].plot(f[1:]-f[:-1])
+ax[2].set_xlabel('r')
+ax[2].set_ylabel('curve overlap')
 plt.show()
