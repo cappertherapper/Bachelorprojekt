@@ -34,7 +34,7 @@ for i in range(0,600):
     if (i%50==0):
         i = 2
         plt.contour(K)
-        plt.pause(0.5)
+        # plt.pause(0.5)
 
 ax[0].plot(f)
 ax[0].set_xlabel('r')
