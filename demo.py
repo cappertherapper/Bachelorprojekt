@@ -2,6 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage.draw import polygon2mask
 from scipy import ndimage
+from PIL import Image
+from preprocessing import biasCorrect
+from skimage.color import label2rgb
+from skimage.morphology import label
+
 
 # t = np.linspace(0,2*np.pi,11)   
 
@@ -19,23 +24,21 @@ from scipy import ndimage
 # all_mask = star_mask + circle_mask
 
 
-from PIL import Image
-from skimage.morphology import label
 
-
-path = 'images/1carr-96etoh-alexa-sted-decon.tif'
-img = Image.open(path).convert("L")
-image = np.array(img)
-threshold_value = 130
-bw = image > threshold_value
-label_image = label(bw)
+# path = 'images/1carr-96etoh-alexa-sted-decon.tif'
+# img = Image.open(path).convert("L")
+# image = np.array(img)
+# threshold_value = 130
+# bw = image > threshold_value
+label_image = biasCorrect(threshold=0.4)
+#label(bw)
 
 canvas = np.zeros((378,378))
 
 fig, ax = plt.subplots(1,4, figsize=(14,6), gridspec_kw={'width_ratios': [1, 1, 1, 2]})
 fig.subplots_adjust(wspace=0.4)
 plt.tight_layout()
-ax[3].imshow(label_image)
+ax[3].imshow(label2rgb(label_image, bg_label=0))
 
 
 F = np.zeros(300)
