@@ -1,5 +1,6 @@
-from skimage import io, morphology, filters, segmentation
+from skimage import io, morphology, filters
 from skimage.color import rgb2gray, rgba2rgb
+from skimage.morphology import label
 import matplotlib.pyplot as plt
 import numpy as np
 plt.rcParams['image.cmap'] = 'gray'
@@ -17,33 +18,33 @@ def biasField(I,mask):
     J = J.reshape((rows,cols)).T
     return(J)
 
-class Preprocessor:
-    def __init__(self):
-        pass
+    
+def biasCorrect(image="images/1carr-96etoh-alexa-sted-decon.tif",
+                    threshold='otsu'):
+    # Image readin
+    im = rgb2gray(rgba2rgb(io.imread(image)))
 
-    def biasCorrection(image="images/1carr-96etoh-alexa-sted-decon.tif",
-                       threshold='otsu'):
-        # Image readin
-        im = rgb2gray(rgba2rgb(io.imread(image)))
+    # Noise reduction by median filtering
+    dskelm = morphology.disk(1)
+    imFilt = filters.median(im, dskelm)
 
-        # Noise reduction by median filtering
-        dskelm = morphology.disk(1)
-        imFilt = filters.median(im, dskelm)
+    # Thresholding
+    tProteins = None
+    if (threshold == 'otsu'):
+        tProteins = filters.threshold_otsu(imFilt)
+    proteins = imFilt > tProteins
 
-        # Thresholding
-        tProteins = None
-        if (threshold == 'otsu'):
-            tProteins = filters.threshold_otsu(imFilt)
-        proteins = imFilt > tProteins
+    # Bias correction
+    B = biasField(imFilt, proteins)
+    imBias = imFilt - B + B.mean()
 
-        # Bias correction
-        B = biasField(imFilt, proteins)
-        imBias = imFilt - B + B.mean()
+    # Finding new threshold
+    tProteinsBias = None
+    if (threshold == 'otsu'):
+        tProteinsBias = filters.threshold_otsu(imBias)
+    proteinsBias = imBias > tProteinsBias
 
-        # Finding new threshold
-        tProteinsBias = None
-        if (threshold == 'otsu'):
-            tProteinsBias = filters.threshold_otsu(imBias)
-        proteinsBias = imBias > tProteinsBias
+    # Labelling
+    labels = label(proteinsBias)
 
-        return proteinsBias
+    return labels
