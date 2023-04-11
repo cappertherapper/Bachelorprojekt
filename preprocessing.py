@@ -17,31 +17,33 @@ def biasField(I,mask):
     J = J.reshape((rows,cols)).T
     return(J)
 
-# class Preprocessor:
-#     def __init__(self, threshold='otsu'):
-#         self.threshold = threshold
+class Preprocessor:
+    def __init__(self):
+        pass
 
+    def biasCorrection(image="images/1carr-96etoh-alexa-sted-decon.tif",
+                       threshold='otsu'):
+        # Image readin
+        im = rgb2gray(rgba2rgb(io.imread(image)))
 
-# Image readin
-im = rgb2gray(rgba2rgb(io.imread("1carr-96etoh-alexa-sted-decon.tif")))
+        # Noise reduction by median filtering
+        dskelm = morphology.disk(1)
+        imFilt = filters.median(im, dskelm)
 
-# Noise reduction by median filtering
-dskelm = morphology.disk(1)
-imFilt = filters.median(im, dskelm)
+        # Thresholding
+        tProteins = None
+        if (threshold == 'otsu'):
+            tProteins = filters.threshold_otsu(imFilt)
+        proteins = imFilt > tProteins
 
-# Thresholding by otsu
-tProteins = filters.threshold_otsu(imFilt)
-proteins = imFilt > tProteins
+        # Bias correction
+        B = biasField(imFilt, proteins)
+        imBias = imFilt - B + B.mean()
 
-# Bias correction
-B = biasField(imFilt, proteins)
-imBias = imFilt - B + B.mean()
+        # Finding new threshold
+        tProteinsBias = None
+        if (threshold == 'otsu'):
+            tProteinsBias = filters.threshold_otsu(imBias)
+        proteinsBias = imBias > tProteinsBias
 
-# Finding new threshold
-tProteinsBias = filters.threshold_otsu(imBias)
-proteinsBias = imBias > tProteinsBias
-
-# Plotting
-plt.imshow(proteinsBias)
-plt.title('Mask at ' + str(tProteinsBias))
-plt.show()
+        return proteinsBias
