@@ -1,9 +1,10 @@
 from skimage import io, morphology, filters
 from skimage.color import rgb2gray, rgba2rgb
 from skimage.morphology import label
+from skimage.segmentation import clear_border
 import matplotlib.pyplot as plt
 import numpy as np
-plt.rcParams['image.cmap'] = 'gray'
+# plt.rcParams['image.cmap'] = 'gray'
 
 def biasField(I,mask):
     (rows,cols) = I.shape
@@ -18,9 +19,9 @@ def biasField(I,mask):
     J = J.reshape((rows,cols)).T
     return(J)
 
-    
+
 def biasCorrect(image="images/1carr-96etoh-alexa-sted-decon.tif",
-                    threshold='otsu'):
+                    threshold=None):
     # Image readin
     im = rgb2gray(rgba2rgb(io.imread(image)))
 
@@ -29,9 +30,7 @@ def biasCorrect(image="images/1carr-96etoh-alexa-sted-decon.tif",
     imFilt = filters.median(im, dskelm)
 
     # Thresholding
-    tProteins = None
-    if (threshold == 'otsu'):
-        tProteins = filters.threshold_otsu(imFilt)
+    tProteins = threshold if threshold != None else filters.threshold_otsu(imFilt)
     proteins = imFilt > tProteins
 
     # Bias correction
@@ -39,12 +38,13 @@ def biasCorrect(image="images/1carr-96etoh-alexa-sted-decon.tif",
     imBias = imFilt - B + B.mean()
 
     # Finding new threshold
-    tProteinsBias = None
-    if (threshold == 'otsu'):
-        tProteinsBias = filters.threshold_otsu(imBias)
+    tProteinsBias = threshold if threshold != None else filters.threshold_otsu(imBias)
     proteinsBias = imBias > tProteinsBias
 
+    # Clearing borders
+    clearProteinsBias = clear_border(proteinsBias)
+
     # Labelling
-    labels = label(proteinsBias)
+    labels = label(clearProteinsBias)
 
     return labels
