@@ -13,7 +13,7 @@ def biasField(I,mask):
     cMsk = c[mask].flatten()
     VanderMondeMsk = np.array([rMsk*0+1, rMsk, cMsk, rMsk**2, rMsk*cMsk, cMsk**2]).T
     ValsMsk = I[mask].flatten()
-    coeff, residuals, rank, singularValues = np.linalg.lstsq(VanderMondeMsk, ValsMsk)
+    coeff, residuals, rank, singularValues = np.linalg.lstsq(VanderMondeMsk, ValsMsk, rcond=-1)
     VanderMonde = np.array([r*0+1, r, c, r**2, r*c, c**2]).T
     J = np.dot(VanderMonde, coeff) # @ operator is a python 3.5 feature!
     J = J.reshape((rows,cols)).T

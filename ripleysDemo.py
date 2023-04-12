@@ -1,9 +1,10 @@
 import numpy as np
 import matplotlib
+from skimage.measure import regionprops
 from matplotlib import pyplot as plt,patches
 from scipy.spatial.distance import pdist, squareform
 # def ripleysK1 (K,r,y):
-from tifCentres import tifCentroids, whitePixels
+from preprocessing import biasCorrect
 
 
 def poissonProcess(N, M):
@@ -75,35 +76,50 @@ def ripleysDemo():
     # x1 = [M-L,M-L]
     F = 1
     
-    DATA = [6,3]
+    DATA = [5,3]
     REPEAT = [1,2]
     COLOR = ['r','b']
     THICKNESS = [1,3]
     PAUSELEN = 0.5
     
+    IMAGE_PATH = "images/1carr-96etoh-alexa-sted-decon.tif"
+    IMAGE_THRESHOLD = 0.5
+
+    
     fig, ax = plt.subplots(1,3, figsize=(10,6), gridspec_kw={'width_ratios': [1, 1, 3]})  # plots
     fig.subplots_adjust(wspace=0.4)
-    # fig.set_size_inches(10,6)
     for i in range(len(REPEAT)):
         for j in range(REPEAT[i]):
             ax[i].clear()
             if DATA[i] == 1:
-                x = poissonProcess(N, M)  # A poisson process
+                # A poisson process
+                x = poissonProcess(N, M)
                 name = 'Poisson'
             elif DATA[i] == 2:
-                x = motherOfGaussians(30, M//50, N, M)  # Mother process of Gaussians
+                # Mother process of Gaussians
+                x = motherOfGaussians(30, M//50, N, M) 
                 name = 'Mother of Gaussian'
             elif DATA[i] == 3:
-                x = noisyGrid(N, 0.2*M/np.sqrt(N), M)  # A regular grid plus noise
+                # A regular grid plus noise
+                x = noisyGrid(N, 0.2*M/np.sqrt(N), M)
                 name = 'Noisy Grid'
             elif DATA[i] == 4:
-                x = regularGrid(N, M)  # A regular grid
+                # A regular grid
+                x = regularGrid(N, M)  
                 name = 'Grid'
             elif DATA[i] == 5:
-                x = tifCentroids()      # Centroids of thresholded clusters
+                # Centroids of thresholded clusters
+                y = biasCorrect(IMAGE_PATH, IMAGE_THRESHOLD)
+                regions = regionprops(y)
+                x = np.array([x.centroid for x in regions])
                 name = 'Centroids'
             elif DATA[i] == 6:
-                x = whitePixels()       # Thresholded clusters
+                # Thresholded clusters
+                y = biasCorrect(IMAGE_PATH, IMAGE_THRESHOLD)
+                y = np.rot90(y, axes=(1,0))
+                bw = y > IMAGE_THRESHOLD
+                x = np.argwhere(bw == True)
+                print(x.shape)
                 name = 'White Pixels'
                 
             K1, r1, y = ripleysK1(x, x0, x1)
@@ -122,6 +138,7 @@ def ripleysDemo():
             ax[2].axis(ymin=0,ymax=8000)
             ax[2].set_title("Ripley's K")
             plt.pause(PAUSELEN)
+    plt.tight_layout()
     plt.show()
 
     
