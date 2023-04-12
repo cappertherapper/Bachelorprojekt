@@ -65,25 +65,7 @@ for cluster in range (1, label_image.max()+1):
 F = F / label_image.max()
 G = G / label_image.max()
 
-<<<<<<< HEAD
-ax[3].imshow(all_mask)
-
-D = ndimage.distance_transform_edt(circle_mask==0)
-f = np.zeros(600)
-g = np.zeros(600)
-for i in range(0,600):
-    K = D<=i
-    f[i] = np.count_nonzero(K*star_mask)
-    g[i] = np.count_nonzero(K)
-    if (i%50==0):
-        i = 2
-        plt.contour(K)
-        # plt.pause(0.5)
-
-ax[0].plot(f)
-=======
 ax[0].plot(F)
->>>>>>> 7b2ade342521ad252e5d212c574088363ed663dc
 ax[0].set_xlabel('r')
 ax[0].set_ylabel('area overlap')
 
