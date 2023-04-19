@@ -2,8 +2,9 @@ from skimage import io, morphology, filters
 from skimage.color import rgb2gray, rgba2rgb
 from skimage.morphology import label
 from skimage.segmentation import clear_border
-import matplotlib.pyplot as plt
+from math import ceil
 import numpy as np
+import cv2
 # plt.rcParams['image.cmap'] = 'gray'
 
 def biasField(I,mask):
@@ -19,15 +20,10 @@ def biasField(I,mask):
     J = J.reshape((rows,cols)).T
     return(J)
 
-
-def biasCorrect(image="images/1carr-96etoh-alexa-sted-decon.tif",
-                    threshold=None):
-    # Image readin
-    im = rgb2gray(rgba2rgb(io.imread(image)))
-
+def preprocess(image, threshold):
     # Noise reduction by median filtering
     dskelm = morphology.disk(1)
-    imFilt = filters.median(im, dskelm)
+    imFilt = filters.median(image, dskelm)
 
     # Thresholding
     tProteins = threshold if threshold != None else filters.threshold_otsu(imFilt)
@@ -46,5 +42,38 @@ def biasCorrect(image="images/1carr-96etoh-alexa-sted-decon.tif",
 
     # Labelling
     labels = label(clearProteinsBias)
-
     return labels
+
+
+def process_image(path, threshold=None):
+    # Image readin
+    im = rgb2gray(rgba2rgb(io.imread(path)))
+    return preprocess(im, threshold)
+
+
+def process_video(path, threshold=None, skip_size=1):
+    video = cv2.VideoCapture(path)
+
+    length = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+
+    frames = np.zeros(shape=(ceil(length / skip_size), height, width), dtype=np.uint8)
+    frame_count = 0
+
+    while True:
+        ret, frame = video.read()
+
+        if not ret:
+            break
+
+        if frame_count % skip_size == 0:
+            im = rgb2gray(frame)
+            im = preprocess(im, threshold)
+            frames[ceil(frame_count / skip_size)] = im
+        
+        frame_count += 1
+
+    video.release()
+
+    return frames
