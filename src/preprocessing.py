@@ -5,7 +5,6 @@ from skimage.segmentation import clear_border
 from math import ceil
 import numpy as np
 import cv2
-# plt.rcParams['image.cmap'] = 'gray'
 
 def biasField(I,mask):
     (rows,cols) = I.shape
@@ -68,28 +67,46 @@ def process_image(path, threshold=None):
 
 
 def process_video(path, threshold=None, skip_size=1):
+    # video = cv2.VideoCapture(path)
+
+    # length = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    # size = min(int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(video.get(cv2.CAP_PROP_FRAME_WIDTH)))
+
+    # frames = np.zeros(shape=(ceil(length / skip_size), size, size))
+    # frame_count = 0
+
+    # while True:
+    #     ret, frame = video.read()
+
+    #     if not ret:
+    #         break
+
+    #     if frame_count % skip_size == 0:
+    #         im = rgb2gray(frame)
+    #         img = resize(im)
+    #         img = preprocess(img, threshold)
+    #         frames[ceil(frame_count / skip_size)] = img
+        
+    #     frame_count += 1
+
+    # video.release()
+
     video = cv2.VideoCapture(path)
-
-    length = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    size = min(int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(video.get(cv2.CAP_PROP_FRAME_WIDTH)))
-
-    frames = np.zeros(shape=(ceil(length / skip_size), size, size))
+    frames = []
     frame_count = 0
 
     while True:
         ret, frame = video.read()
-
         if not ret:
             break
-
         if frame_count % skip_size == 0:
             im = rgb2gray(frame)
-            img = resize(im)
-            img = preprocess(img, threshold)
-            frames[ceil(frame_count / skip_size)] = img
-        
-        frame_count += 1
+            im = resize(im)
+            im = preprocess(im, threshold)
+            frames.append(im)
 
     video.release()
 
-    return frames
+    frames_array = np.array(frames)
+
+    return frames_array
