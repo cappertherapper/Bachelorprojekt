@@ -55,8 +55,14 @@ def preprocess(image, threshold):
 
 
 def process_image(path, threshold=None):
-    # Image readin
-    im = rgb2gray(rgba2rgb(io.imread(path)))
+    im = io.imread(path)
+    if im.ndim == 2: 
+        pass
+    elif im.shape[2] == 3:
+        im = rgb2gray(im)
+    else:
+        im = rgb2gray(rgba2rgb(im))
+    # im = rgb2gray(rgba2rgb(io.imread(path)))
     im = resize(im)
     return preprocess(im, threshold)
 
