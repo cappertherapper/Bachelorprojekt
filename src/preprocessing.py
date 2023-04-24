@@ -20,6 +20,15 @@ def biasField(I,mask):
     J = J.reshape((rows,cols)).T
     return(J)
 
+# Resizes 2d arrays to be same dimensions
+def resize(arr):
+    # if arr.ndim == 2:
+    min_dim_size = min(arr.shape[0], arr.shape[1])
+    return arr[:min_dim_size, :min_dim_size]
+    # elif arr.ndim == 3:
+    #     min_dim_size = min(arr.shape[1], arr.shape[2])
+    #     return arr[:, :min_dim_size, :min_dim_size]
+
 def preprocess(image, threshold):
     # Noise reduction by median filtering
     dskelm = morphology.disk(1)
@@ -48,6 +57,7 @@ def preprocess(image, threshold):
 def process_image(path, threshold=None):
     # Image readin
     im = rgb2gray(rgba2rgb(io.imread(path)))
+    im = resize(im)
     return preprocess(im, threshold)
 
 
@@ -55,10 +65,9 @@ def process_video(path, threshold=None, skip_size=1):
     video = cv2.VideoCapture(path)
 
     length = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+    size = min(int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(video.get(cv2.CAP_PROP_FRAME_WIDTH)))
 
-    frames = np.zeros(shape=(ceil(length / skip_size), height, width), dtype=np.uint8)
+    frames = np.zeros(shape=(ceil(length / skip_size), size, size))
     frame_count = 0
 
     while True:
@@ -69,8 +78,9 @@ def process_video(path, threshold=None, skip_size=1):
 
         if frame_count % skip_size == 0:
             im = rgb2gray(frame)
-            im = preprocess(im, threshold)
-            frames[ceil(frame_count / skip_size)] = im
+            img = resize(im)
+            img = preprocess(img, threshold)
+            frames[ceil(frame_count / skip_size)] = img
         
         frame_count += 1
 

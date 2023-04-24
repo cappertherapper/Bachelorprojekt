@@ -4,10 +4,10 @@ from skimage.measure import regionprops
 from matplotlib import pyplot as plt,patches
 from scipy.spatial.distance import pdist, squareform
 # def ripleysK1 (K,r,y):
-from preprocessing import biasCorrect
+from preprocessing import process_image
 
 
-def poissonProcess(N, M):
+def poissonProcess(N, M):  
     # N randomly and uniformly distributed points on the domain 0..Mx0..M
     x = M * np.random.rand(N, 2)
     return x
@@ -88,6 +88,7 @@ def ripleysDemo():
     
     fig, ax = plt.subplots(1,3, figsize=(10,6), gridspec_kw={'width_ratios': [1, 1, 3]})  # plots
     fig.subplots_adjust(wspace=0.4)
+    plt.tight_layout()
     for i in range(len(REPEAT)):
         for j in range(REPEAT[i]):
             ax[i].clear()
@@ -109,13 +110,13 @@ def ripleysDemo():
                 name = 'Grid'
             elif DATA[i] == 5:
                 # Centroids of thresholded clusters
-                y = biasCorrect(IMAGE_PATH, IMAGE_THRESHOLD)
+                y = process_image(IMAGE_PATH, IMAGE_THRESHOLD)
                 regions = regionprops(y)
                 x = np.array([x.centroid for x in regions])
                 name = 'Centroids'
             elif DATA[i] == 6:
                 # Thresholded clusters
-                y = biasCorrect(IMAGE_PATH, IMAGE_THRESHOLD)
+                y = process_image(IMAGE_PATH, IMAGE_THRESHOLD)
                 y = np.rot90(y, axes=(1,0))
                 bw = y > IMAGE_THRESHOLD
                 x = np.argwhere(bw == True)
@@ -138,7 +139,6 @@ def ripleysDemo():
             ax[2].axis(ymin=0,ymax=8000)
             ax[2].set_title("Ripley's K")
             plt.pause(PAUSELEN)
-    plt.tight_layout()
     plt.show()
 
     
