@@ -28,9 +28,9 @@ def resize(arr):
     #     min_dim_size = min(arr.shape[1], arr.shape[2])
     #     return arr[:, :min_dim_size, :min_dim_size]
 
-def preprocess(image, threshold):
+def preprocess(image, threshold, disk_size=1):
     # Noise reduction by median filtering
-    dskelm = morphology.disk(1)
+    dskelm = morphology.disk(disk_size)
     imFilt = filters.median(image, dskelm)
 
     # Thresholding
@@ -104,6 +104,7 @@ def process_video(path, threshold=None, skip_size=1):
             im = resize(im)
             im = preprocess(im, threshold)
             frames.append(im)
+        frame_count += 1
 
     video.release()
 
