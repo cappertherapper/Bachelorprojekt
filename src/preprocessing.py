@@ -104,6 +104,8 @@ def process_video(path, threshold=None, skip_size=1):
             im = resize(im)
             im = preprocess(im, threshold)
             frames.append(im)
+        frame_count+=1
+        
 
     video.release()
 
