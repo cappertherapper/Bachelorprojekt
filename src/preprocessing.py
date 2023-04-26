@@ -102,7 +102,7 @@ def process_video(path, threshold=None, skip_size=1):
         if frame_count % skip_size == 0:
             im = rgb2gray(frame)
             im = resize(im)
-            im = preprocess(im, threshold)
+            # im = preprocess(im, threshold)
             frames.append(im)
         frame_count += 1
         
@@ -110,5 +110,5 @@ def process_video(path, threshold=None, skip_size=1):
     video.release()
 
     frames_array = np.array(frames)
-
+    
     return frames_array
