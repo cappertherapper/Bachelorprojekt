@@ -65,6 +65,27 @@ def process_image(path, threshold=None):
     im = resize(im)
     return preprocess(im, threshold)
 
+def get_video(path, threshold=None, skip_size=1):
+
+    video = cv2.VideoCapture(path)
+    frames = []
+    frame_count = 0
+
+    while True:
+        ret, frame = video.read()
+        if not ret:
+            break
+        if frame_count % skip_size == 0:
+            im = rgb2gray(frame)
+            im = resize(im)
+            frames.append(im)
+        frame_count += 1
+        
+    video.release()
+
+    frames_array = np.array(frames)
+    
+    return frames_array
 
 def process_video(path, threshold=None, skip_size=1):
     # video = cv2.VideoCapture(path)
@@ -102,7 +123,7 @@ def process_video(path, threshold=None, skip_size=1):
         if frame_count % skip_size == 0:
             im = rgb2gray(frame)
             im = resize(im)
-            # im = preprocess(im, threshold)
+            im = preprocess(im, threshold)
             frames.append(im)
         frame_count += 1
         
