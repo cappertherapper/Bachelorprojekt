@@ -2,9 +2,9 @@ from skimage import io, morphology, filters
 from skimage.color import rgb2gray, rgba2rgb
 from skimage.morphology import label
 from skimage.segmentation import clear_border
-from math import ceil
 import numpy as np
 import cv2
+
 
 def biasField(I,mask):
     (rows,cols) = I.shape
@@ -19,13 +19,22 @@ def biasField(I,mask):
     J = J.reshape((rows,cols)).T
     return(J)
 
-# Resizes 2d arrays to be same dimensions
-def resize(arr, size=None):
-    if size == None:
-        size = min(arr.shape[0], arr.shape[1])
-        return arr[:size, :size]
+
+def resize(arr, size=None, corner=None):
+    """Resizes array or ensures that dimensions are the same"""
+    start, end = None, None
+    min_size = min(arr.shape[0], arr.shape[1])
+    if not size:
+        start = 0
+        end = min_size
+    elif not corner:
+        start = (min_size - size) // 2
+        end = start + size
     else:
-        return arr[:size[0], :size[1]]
+        start = corner
+        end = corner + size
+    return arr[start:end, start:end]
+
 
 def preprocess(image, threshold, disk_size=1, clear_borders=False):
     dskelm = morphology.disk(disk_size)
@@ -37,10 +46,8 @@ def preprocess(image, threshold, disk_size=1, clear_borders=False):
     B = biasField(imFilt, proteins)
     imBias = imFilt - B + B.mean()
 
-    # Finding new threshold
     tProteinsBias = threshold if threshold != None else filters.threshold_otsu(imBias)
     proteinsBias = imBias > tProteinsBias
-
 
     if clear_borders:
         proteinsBias = clear_border(proteinsBias)
@@ -49,7 +56,7 @@ def preprocess(image, threshold, disk_size=1, clear_borders=False):
     return labels
 
 
-def process_image(path, threshold=None):
+def process_image(path, threshold=None, size=None):
     im = io.imread(path)
     if im.ndim == 2: 
         pass
@@ -60,8 +67,8 @@ def process_image(path, threshold=None):
     im = resize(im)
     return preprocess(im, threshold)
 
-def get_video(path, threshold=None, skip_size=1):
 
+def get_video(path, threshold=None, skip_size=1):
     video = cv2.VideoCapture(path)
     frames = []
     frame_count = 0
@@ -79,34 +86,10 @@ def get_video(path, threshold=None, skip_size=1):
     video.release()
 
     frames_array = np.array(frames)
-    
     return frames_array
 
+
 def process_video(path, threshold=None, skip_size=1, size=None):
-    # video = cv2.VideoCapture(path)
-
-    # length = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    # size = min(int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(video.get(cv2.CAP_PROP_FRAME_WIDTH)))
-
-    # frames = np.zeros(shape=(ceil(length / skip_size), size, size))
-    # frame_count = 0
-
-    # while True:
-    #     ret, frame = video.read()
-
-    #     if not ret:
-    #         break
-
-    #     if frame_count % skip_size == 0:
-    #         im = rgb2gray(frame)
-    #         img = resize(im)
-    #         img = preprocess(img, threshold)
-    #         frames[ceil(frame_count / skip_size)] = img
-        
-    #     frame_count += 1
-
-    # video.release()
-
     video = cv2.VideoCapture(path)
     frames = []
     frame_count = 0
@@ -121,10 +104,8 @@ def process_video(path, threshold=None, skip_size=1, size=None):
             im = preprocess(im, threshold)
             frames.append(im)
         frame_count += 1
-        
-
+    
     video.release()
 
     frames_array = np.array(frames)
-    
     return frames_array

@@ -8,7 +8,7 @@ def generate_noise(size, amount, threshold, disk_size):
     
     noise_list = []
     for i in range(amount):
-        im = np.random.normal(size=size)
+        im = np.random.normal(size=(size, size))
 
         disk = morphology.disk(disk_size)
         imFilt = filters.median(im, disk)
