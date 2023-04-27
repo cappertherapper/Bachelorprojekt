@@ -20,24 +20,20 @@ def biasField(I,mask):
     return(J)
 
 # Resizes 2d arrays to be same dimensions
-def resize(arr):
-    # if arr.ndim == 2:
-    min_dim_size = min(arr.shape[0], arr.shape[1])
-    return arr[:min_dim_size, :min_dim_size]
-    # elif arr.ndim == 3:
-    #     min_dim_size = min(arr.shape[1], arr.shape[2])
-    #     return arr[:, :min_dim_size, :min_dim_size]
+def resize(arr, size=None):
+    if size == None:
+        size = min(arr.shape[0], arr.shape[1])
+        return arr[:size, :size]
+    else:
+        return arr[:size[0], :size[1]]
 
-def preprocess(image, threshold, disk_size=1):
-    # Noise reduction by median filtering
+def preprocess(image, threshold, disk_size=1, clear_borders=False):
     dskelm = morphology.disk(disk_size)
     imFilt = filters.median(image, dskelm)
 
-    # Thresholding
     tProteins = threshold if threshold != None else filters.threshold_otsu(imFilt)
     proteins = imFilt > tProteins
 
-    # Bias correction
     B = biasField(imFilt, proteins)
     imBias = imFilt - B + B.mean()
 
@@ -45,11 +41,11 @@ def preprocess(image, threshold, disk_size=1):
     tProteinsBias = threshold if threshold != None else filters.threshold_otsu(imBias)
     proteinsBias = imBias > tProteinsBias
 
-    # Clearing borders
-    clearProteinsBias = clear_border(proteinsBias)
 
-    # Labelling
-    labels = label(clearProteinsBias)
+    if clear_borders:
+        proteinsBias = clear_border(proteinsBias)
+
+    labels = label(proteinsBias)
     return labels
 
 
@@ -61,7 +57,6 @@ def process_image(path, threshold=None):
         im = rgb2gray(im)
     else:
         im = rgb2gray(rgba2rgb(im))
-    # im = rgb2gray(rgba2rgb(io.imread(path)))
     im = resize(im)
     return preprocess(im, threshold)
 
@@ -87,7 +82,7 @@ def get_video(path, threshold=None, skip_size=1):
     
     return frames_array
 
-def process_video(path, threshold=None, skip_size=1):
+def process_video(path, threshold=None, skip_size=1, size=None):
     # video = cv2.VideoCapture(path)
 
     # length = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -122,7 +117,7 @@ def process_video(path, threshold=None, skip_size=1):
             break
         if frame_count % skip_size == 0:
             im = rgb2gray(frame)
-            im = resize(im)
+            im = resize(im, size)
             im = preprocess(im, threshold)
             frames.append(im)
         frame_count += 1
