@@ -3,7 +3,7 @@ from skimage.morphology import label
 import numpy as np
 
 
-def generate_noise(size, amount, threshold, disk_size):
+def generate_noise(size, threshold, disk_size, amount=1):
     """Generates a list of random noise images"""   
     
     noise_list = []

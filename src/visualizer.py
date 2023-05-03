@@ -1,4 +1,5 @@
 import numpy as np
+# import imageio
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from skimage.color import label2rgb
@@ -11,7 +12,8 @@ def visualize(video, F_list, G_list, F_noise=np.array([]), G_noise=np.array([]),
     # fig.subplots_adjust(wspace=0.4)
     plt.tight_layout()
 
-    colors = cm.Blues(np.linspace(0.2, 1, len(video)))
+    colors = cm.Reds(np.linspace(0.2, 1, len(video)))
+    # plots = []
 
     for i in range(len(F_list)):
         M = video[i].shape[0] - L
@@ -32,9 +34,14 @@ def visualize(video, F_list, G_list, F_noise=np.array([]), G_noise=np.array([]),
         ax[2].set_xlabel('r')
         ax[2].set_ylabel('curve overlap')
 
+        # ax[0].set_ylim([0,2500])
+        # ax[1].set_ylim([0,0.07])
+        # ax[2].set_ylim([0,50])
+
         if save:
             filename = 'frames/subplot_{:03d}.png'.format(i)
             fig.savefig(filename)
+            # plots.append(fig)
 
         display(fig)
         clear_output(wait = True)
@@ -47,4 +54,9 @@ def visualize(video, F_list, G_list, F_noise=np.array([]), G_noise=np.array([]),
     if save:
         filename = 'frames/subplot_{:03d}.png'.format(i+1)
         fig.savefig(filename)
+        # plots.append(fig)
+
+        # with imageio.get_writer('animation.gif', mode='I') as writer:
+        #     for plot in plots:
+        #         writer.append_data(imageio.core.image_as_uint(plot.canvas.renderer.buffer_rgba()))
     plt.show()
