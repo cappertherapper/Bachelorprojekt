@@ -8,7 +8,8 @@ def analyse_video(video, L=200):
     """Generates lists of F and G from a video"""
     F_list = []
     G_list = []
-    for p in tqdm(range(len(video))):
+    # for p in tqdm(range(len(video))):
+    for p in range(len(video)):
         label_image = video[p]
         M = label_image.shape[0] - L
 
