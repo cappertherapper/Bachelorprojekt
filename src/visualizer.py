@@ -47,9 +47,9 @@ def visualize(video, F_list, G_list, F_noise=np.array([]), G_noise=np.array([]),
         clear_output(wait = True)
 
     if F_noise.size and G_noise.size:
-        ax[0].plot(F_noise, color='r')
-        ax[1].plot(F_noise/G_noise, color='r')
-        ax[2].plot(F_noise[1:]-F_noise[:-1], color='r')
+        ax[0].plot(F_noise, color='b')
+        ax[1].plot(F_noise/G_noise, color='b')
+        ax[2].plot(F_noise[1:]-F_noise[:-1], color='b')
 
     if save:
         filename = 'frames/subplot_{:03d}.png'.format(i+1)

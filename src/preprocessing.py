@@ -36,7 +36,7 @@ def resize(arr, size=None, corner=None):
     return arr[start:end, start:end]
 
 
-def preprocess(image, threshold, smooth=1, clear_borders=False):
+def preprocess(image, threshold, smooth=0.4, clear_borders=False):
     imFilt = filters.gaussian(image, smooth)
 
     imThresh = imFilt > threshold
