@@ -6,7 +6,7 @@ import numpy as np
 import cv2
 
 
-def biasField(I,mask):
+def biasField(I, mask):
     (rows,cols) = I.shape
     r, c = np.meshgrid(list(range(rows)), list(range(cols)))
     rMsk = r[mask].flatten()
@@ -36,23 +36,20 @@ def resize(arr, size=None, corner=None):
     return arr[start:end, start:end]
 
 
-def preprocess(image, threshold, disk_size=1, clear_borders=False):
-    dskelm = morphology.disk(disk_size)
-    imFilt = filters.median(image, dskelm)
+def preprocess(image, threshold, smooth=1, clear_borders=False):
+    imFilt = filters.gaussian(image, smooth)
 
-    tProteins = threshold if threshold != None else filters.threshold_otsu(imFilt)
-    proteins = imFilt > tProteins
+    imThresh = imFilt > threshold
 
-    B = biasField(imFilt, proteins)
+    B = biasField(imFilt, imThresh)
     imBias = imFilt - B + B.mean()
 
-    tProteinsBias = threshold if threshold != None else filters.threshold_otsu(imBias)
-    proteinsBias = imBias > tProteinsBias
+    imBiasThresh = imBias > threshold
 
     if clear_borders:
-        proteinsBias = clear_border(proteinsBias)
+        imBiasThresh = clear_border(imBiasThresh)
 
-    labels = label(proteinsBias)
+    labels = label(imBiasThresh)
     return labels
 
 

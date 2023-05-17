@@ -1,5 +1,5 @@
 import numpy as np
-from tqdm.auto import tqdm
+# from tqdm.auto import tqdm
 from scipy import ndimage
 from skimage.measure import regionprops
 
