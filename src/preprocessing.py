@@ -36,7 +36,7 @@ def resize(arr, size=None, corner=None):
     return arr[start:end, start:end]
 
 
-def preprocess(image, threshold, smooth=0.4, clear_borders=False):
+def preprocess(image, threshold, smooth=1, clear_borders=False):
     imFilt = filters.gaussian(image, smooth)
 
     imThresh = imFilt > threshold
@@ -53,7 +53,7 @@ def preprocess(image, threshold, smooth=0.4, clear_borders=False):
     return labels
 
 
-def process_image(path, threshold=None, size=None):
+def process_image(path, threshold=None, smooth=1, size=None):
     im = io.imread(path)
     if im.ndim == 2: 
         pass
@@ -62,7 +62,7 @@ def process_image(path, threshold=None, size=None):
     else:
         im = rgb2gray(rgba2rgb(im))
     im = resize(im)
-    return preprocess(im, threshold)
+    return preprocess(im, threshold, smooth=smooth)
 
 
 def get_video(path, threshold=None, skip_size=1):
@@ -86,7 +86,7 @@ def get_video(path, threshold=None, skip_size=1):
     return frames_array
 
 
-def process_video(path, threshold=None, skip_size=1, size=None):
+def process_video(path, threshold=None, smooth=1, skip_size=1, size=None):
     video = cv2.VideoCapture(path)
     frames = []
     frame_count = 0
@@ -98,7 +98,7 @@ def process_video(path, threshold=None, skip_size=1, size=None):
         if frame_count % skip_size == 0:
             im = rgb2gray(frame)
             im = resize(im, size)
-            im = preprocess(im, threshold)
+            im = preprocess(im, threshold, smooth=smooth)
             frames.append(im)
         frame_count += 1
     
