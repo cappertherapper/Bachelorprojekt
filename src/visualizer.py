@@ -12,7 +12,7 @@ def visualize(video, F_list, G_list, F_noise=np.array([]), G_noise=np.array([]),
     # fig.subplots_adjust(wspace=0.4)
     plt.tight_layout()
 
-    colors = cm.Reds(np.linspace(0.2, 1, len(video)))
+    colors = cm.Blues(np.linspace(0.2, 1, len(video)))
     # plots = []
 
     for i in range(len(F_list)):
@@ -47,9 +47,9 @@ def visualize(video, F_list, G_list, F_noise=np.array([]), G_noise=np.array([]),
         clear_output(wait = True)
 
     if F_noise.size and G_noise.size:
-        ax[0].plot(F_noise, color='b')
-        ax[1].plot(F_noise/G_noise, color='b')
-        ax[2].plot(F_noise[1:]-F_noise[:-1], color='b')
+        ax[0].plot(F_noise, color='r')
+        ax[1].plot(F_noise/G_noise, color='r')
+        ax[2].plot(F_noise[1:]-F_noise[:-1], color='r')
 
     if save:
         filename = 'frames/subplot_{:03d}.png'.format(i+1)
