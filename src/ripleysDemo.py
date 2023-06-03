@@ -65,10 +65,10 @@ def ripleysK1(x, x0, x1):
 
 
 def ripleysDemo():
-    # N = 100
-    # M = 256
-    N = 542 # Same number of clusters found in .tif
-    M = 378 # Size of .tif images
+    N = 100
+    M = 256
+    # N = 542 # Same number of clusters found in .tif
+    # M = 378 # Size of .tif images
     L = 50
     x0 = np.array([L,L])
     x1 = np.array([M-L,M-L])
@@ -76,14 +76,16 @@ def ripleysDemo():
     # x1 = [M-L,M-L]
     F = 1
     
-    DATA = [5,3]
-    REPEAT = [1,2]
+    DATA = [1, 2]
+    REPEAT = [1,1]
     COLOR = ['r','b']
     THICKNESS = [1,3]
     PAUSELEN = 0.5
     
     IMAGE_PATH = "images/1carr-96etoh-alexa-sted-decon.tif"
     IMAGE_THRESHOLD = 0.5
+
+    a, b = 0.2, 100
 
     
     fig, ax = plt.subplots(1,3, figsize=(10,6), gridspec_kw={'width_ratios': [1, 1, 3]})  # plots
@@ -126,6 +128,9 @@ def ripleysDemo():
             K1, r1, y = ripleysK1(x, x0, x1)
             r = np.linspace(0, L, 10*L)
             f = np.pi*r**2
+            f1 = (1+a)*np.pi*r**2 + b
+            f2 = (1-a)*np.pi*r**2 - b
+
             
             ax[i].plot(x[:, 0], x[:, 1], 'b+')
             rect = patches.Rectangle(x0, (x1[0]-x0[0]),(x1[0]-x0[0]), color='red')
@@ -133,12 +138,16 @@ def ripleysDemo():
             ax[i].axis(xmin=0,xmax=M)
             ax[i].axis(ymin=0,ymax=M)
             ax[i].set_title(name)
-            ax[2].plot(r1, K1, COLOR[i], linewidth=THICKNESS[0])
-            ax[2].plot(r, f, 'k')
+            ax[2].plot(r1, K1, COLOR[i], linewidth=THICKNESS[0], label=name)
+            if (i == len(REPEAT)-1):
+                ax[2].plot(r, f, 'k', linewidth=THICKNESS[0], label='Threshold')
+                ax[2].plot(r, f1, 'grey', linewidth=THICKNESS[0], label='Confidence Envelope')
+                ax[2].plot(r, f2, 'grey', linewidth=THICKNESS[0])
             ax[2].axis(xmin=0,xmax=L)
             ax[2].axis(ymin=0,ymax=8000)
             ax[2].set_title("Ripley's K")
             plt.pause(PAUSELEN)
+    plt.legend()
     plt.show()
 
     
