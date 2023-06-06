@@ -34,7 +34,6 @@ def analyse_video(video, L=200):
                 dist_mask = D <= i
                 f[i] += np.count_nonzero(np.logical_and(dist_mask, rem_mask))
                 g[i] += np.count_nonzero(dist_mask)
-
         f = f / curr_image.max()
         g = g / curr_image.max()
 
