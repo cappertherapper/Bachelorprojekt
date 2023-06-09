@@ -53,7 +53,7 @@ def preprocess(image, threshold, smooth=1, clear_borders=False):
     return labels
 
 
-def process_image(path, threshold=None, smooth=1, size=None):
+def process_image(path, threshold, smooth=1, size=None):
     im = io.imread(path)
     if im.ndim == 2: 
         pass
@@ -65,7 +65,7 @@ def process_image(path, threshold=None, smooth=1, size=None):
     return preprocess(im, threshold, smooth=smooth)
 
 
-def get_video(path, threshold=None, skip_size=1):
+def get_video(path, skip_size=1):
     video = cv2.VideoCapture(path)
     frames = []
     frame_count = 0
