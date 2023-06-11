@@ -24,7 +24,7 @@ def visualize(video, F_list, G_list, F_noise=np.array([]), G_noise=np.array([]),
         ax[3].imshow(label2rgb(video[i], bg_label=0))
         ax[3].set_title('frame nr.{}'.format(i+1))
 
-        ax[0].plot(F_list[i], color=colors[i])
+        ax[0].plot(F_list[i], color=colors[i],label=('frame nr.{}'.format(i+1)))
         ax[0].set_xlabel('r')
         ax[0].set_ylabel('area overlap')
         ax[1].plot(F_list[i]/G_list[i], color=colors[i])
