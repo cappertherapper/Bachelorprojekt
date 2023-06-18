@@ -1,4 +1,0 @@
-swig -Wall -python -c++ NeighbourhoodTriMeshIntegrator.i
-g++ -O3 -fPIC -fopenmp -lstdc++ -c c_NeighbourhoodTriMeshIntegrator.cpp
-g++ -O3 -fPIC -fopenmp -lstdc++ -c NeighbourhoodTriMeshIntegrator_wrap.cxx -I/usr/include/python3.7 -I/usr/lib/python3.7/site-packages/numpy/core/include
-g++ -shared c_NeighbourhoodTriMeshIntegrator.o NeighbourhoodTriMeshIntegrator_wrap.o -fopenmp -O3 -lstdc++ -o _NeighbourhoodTriMeshIntegrator.so
