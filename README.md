@@ -12,4 +12,5 @@ during milk curdling through the application of spatial analysis methods
 Run `demo.ipynb` with path to video.
 
 ## Optimize parameters for synthetic images
-Rune `gradient_descent.ipynb` with path to video.
+Run `gradient_descent.ipynb` with path to video.
+
